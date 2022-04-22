@@ -123,8 +123,8 @@ module my_controller#(
         .aresetn(aresetn && (state != S_DONE)),
         .ain(ain),
         .din(din),
-        .addr(addr),
-        .we(we_local),
+        // .addr(addr),
+        // .we(we_local),
         .valid(valid),
         .dvalid(dvalid),
         .dout(dout)
