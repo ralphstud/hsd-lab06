@@ -1,77 +1,78 @@
 `timescale 1ns / 1ps
 
-module tb_pecontroller();
-
-    //for PE_CONTROLLER
-    reg INIT;
-    reg CLK;
-    reg RST;
-    reg [31:0] MAT [15:0];
-    reg [31:0] VEC [15:0];
-    reg [31:0] RDDATA;
-    wire [31:0] WRDATA;
-    wire [3:0] ADDR;
-    wire DONE;
-
-    //for test
-
-    integer i;
-
-    initial begin
-        CLK <= 1;
-        INIT <= 0;
-        RST <= 0;
-        #10;
-        INIT <= 1;
-        MAT[0] = 32'h00000000;
-        MAT[1] = 32'h3f800000;
-        MAT[2] = 32'h40000000; 
-        MAT[3] = 32'h40400000; 
-        MAT[4] = 32'h40800000;
-        MAT[5] = 32'h40a00000;
-        MAT[6] = 32'h40c00000;
-        MAT[7] = 32'h40e00000;
-        MAT[8] = 32'h41000000;
-        MAT[9] = 32'h41100000;
-        MAT[10] = 32'h41200000;
-        MAT[11] = 32'h41300000;
-        MAT[12] = 32'h41400000;
-        MAT[13] = 32'h41500000;
-        MAT[14] = 32'h41600000;
-        MAT[15] = 32'h41700000;
-        VEC[0] = 32'h3f800000; 
-        VEC[1] = 32'h40000000;
-        VEC[2] = 32'h40400000; 
-        VEC[3] = 32'h40800000; 
-        VEC[4] = 32'h40a00000;
-        VEC[5] = 32'h40c00000;
-        VEC[6] = 32'h40e00000;
-        VEC[7] = 32'h41000000;
-        VEC[8] = 32'h41100000;
-        VEC[9] = 32'h41200000;
-        VEC[10] = 32'h41300000;
-        VEC[11] = 32'h41400000;
-        VEC[12] = 32'h41500000;
-        VEC[13] = 32'h41600000;
-        VEC[14] = 32'h41700000;
-        VEC[15] = 32'h41800000;
-        for (i = 0; i < 16; i = i + 1) begin
-            RDDATA <= MAT[i];
-            #10;
-            RDDATA <= VEC[i];
-        end
-    end
+module tb_pecontroller #(
+	parameter L_RAM_SIZE = 6
+);
+	reg clk;
+	reg aresetn;
+	reg [31:0] globalbuff[31:0];
+	wire [L_RAM_SIZE-1:0] rdaddr;
+	wire [31:0] rddata;
+	wire [31:0] dout;
+	wire done;
     
-    always #5 CLK = ~CLK;
-
-    my_controller #(8,4) CTRL (
-        .start(INIT),
-        .done(DONE),
-        .aclk(CLK),
-        .aresetn(RST),
-        .rdaddr(ADDR),
-        .rddata(RDDATA),
-        .wrdata(WRDATA)
-    );
-
+	reg start;
+    
+	initial begin
+    	globalbuff[0] <= 32'h00000000;
+    	globalbuff[1] <= 32'h3f800000;
+    	globalbuff[2] <= 32'h40000000;
+    	globalbuff[3] <= 32'h40400000;
+    	globalbuff[4] <= 32'h40800000;
+    	globalbuff[5] <= 32'h40a00000;
+    	globalbuff[6] <= 32'h40c00000;
+    	globalbuff[7] <= 32'h40e00000;
+    	globalbuff[8] <= 32'h41000000;
+    	globalbuff[9] <= 32'h41100000;
+    	globalbuff[10]<= 32'h41200000;
+    	globalbuff[11]<= 32'h41300000;
+    	globalbuff[12]<= 32'h41400000;
+    	globalbuff[13]<= 32'h41500000;
+    	globalbuff[14]<= 32'h41600000;
+    	globalbuff[15]<= 32'h41700000;
+   	 
+    	globalbuff[16] <= 32'h3f800000;
+    	globalbuff[17] <= 32'h40000000;
+    	globalbuff[18] <= 32'h40400000;
+    	globalbuff[19] <= 32'h40800000;
+    	globalbuff[20] <= 32'h40a00000;
+    	globalbuff[21] <= 32'h40c00000;
+    	globalbuff[22] <= 32'h40e00000;
+    	globalbuff[23] <= 32'h41000000;
+    	globalbuff[24] <= 32'h41100000;
+    	globalbuff[25] <= 32'h41200000;
+    	globalbuff[26] <= 32'h41300000;
+    	globalbuff[27] <= 32'h41400000;
+    	globalbuff[28] <= 32'h41500000;
+    	globalbuff[29] <= 32'h41600000;
+    	globalbuff[30] <= 32'h41700000;
+    	globalbuff[31] <= 32'h41800000;
+   	 
+    	clk <= 0;
+    	aresetn <= 1;
+    	#8;
+    	aresetn <= 0;
+    	#20;
+    	aresetn <= 1;
+    	start <= 1;
+    	#10;
+    	start <= 0;    
+	end
+    
+	assign rddata = globalbuff[rdaddr];
+    
+	my_controller MPC(
+    	.clk(clk),
+    	.rst(~aresetn),
+    	.start(start),
+    	.rddata(rddata),
+    	.rdaddr(rdaddr),
+    	.done(done),
+    	.out(dout)
+	);
+    
+	always #5 clk = ~clk;
+    
 endmodule
+
+
