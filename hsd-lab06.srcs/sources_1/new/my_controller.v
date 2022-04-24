@@ -57,7 +57,7 @@ module my_controller#(
         	S_IDLE: if (start) next_state = S_LOAD; else next_state = present_state;
         	S_LOAD: if (countL == 32) next_state = S_CALC; else next_state = present_state;
         	S_CALC: if (countC == 256) next_state = S_DONE; else next_state = present_state;
-        	S_DONE: if (count5 == 4) next_state = S_IDLE; else next_state = present_state;
+        	S_DONE: if (count5 == 5) next_state = S_IDLE; else next_state = present_state;
         	//default: next_state = S_IDLE;
     	endcase
     //part 3: evaluate
